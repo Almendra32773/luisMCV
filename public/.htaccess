@@ -1,0 +1,21 @@
+RewriteEngine On
+
+# Base directory
+RewriteBase /luisMCV/public/
+
+# IMPORTANTE: Permitir acceso a archivos y directorios reales
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Redirigir TODO lo demás a index.php
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Asegurar que index.php maneje todas las rutas
+DirectoryIndex index.php
+
+# Deshabilitar listado de directorios
+Options -Indexes
+
+# Manejar errores 404
+ErrorDocument 404 /luisMCV/public/index.php

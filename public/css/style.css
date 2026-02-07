@@ -1,0 +1,25 @@
+/* Estilos básicos */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.sidebar {
+    min-height: calc(100vh - 56px);
+}
+
+.table th {
+    font-weight: 600;
+}
+
+.card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+}
+
+.btn {
+    border-radius: 6px;
+}
+
+.alert {
+    border-radius: 8px;
+}

@@ -1,18 +1,24 @@
 {
-    "name": "luiscarlos/luis-mcv",
+    "name": "joseph/mvc-php",
+    "description": "Un framework MVC personalizado en PHP",
+    "type": "project",
+    "require": {
+        "gabordemooij/redbean": "^5.7",
+        "vlucas/phpdotenv": "^5.6",
+        "dompdf/dompdf": "^3.1"
+    },
+    "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Luiscarlos\\LuisMcv\\": "app/"
+            "App\\": "app/",
+            "Core\\": "core/"
         }
     },
     "authors": [
         {
-            "name": "Vito",
-            "email": "orocopeyluiscarlos@gmail.com"
+            "name": "josephmora1810",
+            "email": "josephmora18102002@gmail.com"
         }
     ],
-    "require": {
-        "vlucas/phpdotenv": "^5.6",
-        "dompdf/dompdf": "^3.1"
-    }
+    "minimum-stability": "stable"
 }
