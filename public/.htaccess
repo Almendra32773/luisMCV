@@ -18,4 +18,4 @@ DirectoryIndex index.php
 Options -Indexes
 
 # Manejar errores 404
-ErrorDocument 404 /luisMCV/public/index.php
+ErrorDocument 404 /index.php

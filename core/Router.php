@@ -96,32 +96,20 @@ class Router
             ];
         }
         
-        // 2. Buscar por patrón (parámetros)
-        foreach ($this->patterns[$method] as $pattern => $data) {
-            $regex = '#^' . $pattern . '$#';
-            if (preg_match($regex, $uri, $matches)) {
-                array_shift($matches); // Remover match completo
-                
-                $params = [];
-                foreach ($data['param_names'] as $index => $name) {
-                    $params[$name] = $matches[$index] ?? null;
-                }
-                
+        // 2. Manejar rutas dinámicas con patrones
+        foreach ($this->patterns[$method] as $pattern => $route) {
+            if (preg_match("/^$pattern$/", $uri, $matches)) {
+                array_shift($matches); // Eliminar coincidencia completa
+                $params = array_combine($route['param_names'], $matches);
                 return [
-                    'action' => $data['controller'],
+                    'action' => $route['controller'],
                     'params' => $params
                 ];
             }
         }
-        
-        // 3. Si hay callback 404, usarlo
-        if ($this->notFoundCallback && is_callable($this->notFoundCallback)) {
-            call_user_func($this->notFoundCallback);
-            exit;
-        }
-        
-        // 4. Si no, lanzar excepción
-        throw new Exception("Ruta no encontrada: {$method} {$uri}", 404);
+
+        // 3. Manejar rutas no encontradas
+        $this->handleNotFound();
     }
     
     protected function getCurrentUri()
@@ -149,6 +137,9 @@ class Router
             $uri = substr($uri, strlen($basePath));
         }
         
+        // CORRECCIÓN CRÍTICA 3: Normalizar rutas para evitar errores de mayúsculas/minúsculas
+        $uri = strtolower(rawurldecode($uri));
+        
         // Si la URI está vacía después de procesar, hacerla "/"
         $uri = trim($uri, '/');
         if ($uri === '') {
@@ -161,5 +152,21 @@ class Router
         error_log("Router URI: {$uri}");
         
         return $uri;
+    }
+    
+    public function set404($callback)
+    {
+        $this->notFoundCallback = $callback;
+    }
+
+    protected function handleNotFound()
+    {
+        if ($this->notFoundCallback) {
+            call_user_func($this->notFoundCallback);
+        } else {
+            http_response_code(404);
+            echo "<h1>404 Not Found</h1>";
+            exit;
+        }
     }
 }

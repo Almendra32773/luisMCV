@@ -2,6 +2,7 @@
 namespace App\Controllers;
 
 use Core\Controller;
+use Core\Middleware;
 use App\Models\{Book, Member, Loan};
 
 class HomeController extends Controller

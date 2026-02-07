@@ -1,10 +1,38 @@
-/* Estilos básicos */
+/* Estilo general */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    font-family: Arial, sans-serif;
+    box-shadow: none; /* Quitar efecto flotante */
 }
 
 .sidebar {
-    min-height: calc(100vh - 56px);
+    height: calc(100vh - 56px); /* Ajuste para que no cubra el footer */
+    background-color: #3b4045; /* Gris */
+    border-right: none;
+}
+
+/* Fondo plano */
+body {
+    background-color: #f8f9fa;
+}
+
+/* Secciones de información */
+.section-info {
+    border: 1px solid #dee2e6; /* Bordes para destacar información */
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.sidebar .nav-link {
+    color: #e9ecef;
+    border-radius: 5px;
+    margin: 5px 0;
+}
+
+.sidebar .nav-link:hover {
+    color: #fff;
+    background-color: #495057;
 }
 
 .table th {
@@ -17,9 +45,21 @@ body {
 }
 
 .btn {
-    border-radius: 6px;
+    border-radius: 5px;
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.btn:hover {
+    background-color: #5a6268;
 }
 
 .alert {
+    border-radius: 8px;
+}
+
+/* Mantener efecto flotante solo en formularios de login y register */
+.auth-form {
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Efecto flotante */
     border-radius: 8px;
 }

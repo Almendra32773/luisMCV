@@ -79,7 +79,7 @@ $router->post('/users', 'UserController@store');
 // ============================================
 // ERRORES - COMENTAR TEMPORALMENTE HASTA QUE FUNCIONE
 // ============================================
-// $router->set404(function() {
-//     http_response_code(404);
-//     require_once '../app/views/errors/404.php';
-// });
+$router->set404(function() {
+    http_response_code(404);
+    require_once APP_PATH . '/Views/errors/404.php';
+});

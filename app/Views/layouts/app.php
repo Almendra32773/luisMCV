@@ -14,6 +14,7 @@
         body {
             padding-top: 56px;
             background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
         }
         
         .sidebar {
@@ -22,40 +23,39 @@
             bottom: 0;
             left: 0;
             z-index: 1000;
-            padding: 20px 0;
-            overflow-x: hidden;
-            overflow-y: auto;
-            background-color: #343a40;
-            border-right: 1px solid #dee2e6;
-        }
-        
-        .sidebar-sticky {
-            position: relative;
-            top: 0;
-            height: calc(100vh - 56px);
-            padding-top: .5rem;
-            overflow-x: hidden;
-            overflow-y: auto;
+            padding: 10px 0;
+            background-color: #3b4045; /* Gris */
+            border-right: none;
+            height: calc(100vh - 56px); /* Ajuste para que no cubra el footer */
         }
         
         .sidebar .nav-link {
-            color: #adb5bd;
-            padding: 0.5rem 1rem;
+            color: #e9ecef;
+            border-radius: 5px;
+            margin: 5px 0;
         }
         
         .sidebar .nav-link:hover {
             color: #fff;
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        
-        .sidebar .nav-link.active {
-            color: #fff;
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: #495057;
         }
         
         .main-content {
             padding: 20px;
-            margin-left: 220px;
+            margin-left: 200px;
+            background-color: #f8f9fa; /* Fondo plano */
+            border: 1px solid #dee2e6; /* Bordes para secciones de información */
+            border-radius: 5px;
+        }
+        
+        .btn {
+            border-radius: 5px;
+            background-color: #6c757d;
+            color: #fff;
+        }
+        
+        .btn:hover {
+            background-color: #5a6268;
         }
         
         @media (max-width: 768px) {

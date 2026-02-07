@@ -12,26 +12,32 @@ class Controller
         // Iniciar buffer
         ob_start();
         
-        // Cargar la vista
-        $viewPath = APP_PATH . "/Views/{$view}.php";
-        if (!file_exists($viewPath)) {
-            throw new \Exception("Vista no encontrada: {$view}");
-        }
-        
-        require $viewPath;
-        $content = ob_get_clean();
-        
-        // Cargar layout si se especifica
-        if ($layout) {
-            $layoutPath = APP_PATH . "/Views/{$layout}.php";
-            if (!file_exists($layoutPath)) {
-                throw new \Exception("Layout no encontrado: {$layout}");
+        try {
+            // Cargar la vista
+            $viewPath = APP_PATH . "/Views/{$view}.php";
+            if (!file_exists($viewPath)) {
+                throw new \Exception("Vista no encontrada: {$view}");
             }
-            
-            // El layout usará $content automáticamente
-            require $layoutPath;
-        } else {
-            echo $content;
+            require $viewPath;
+            $content = ob_get_clean();
+
+            // Cargar layout si se especifica
+            if ($layout) {
+                $layoutPath = APP_PATH . "/Views/{$layout}.php";
+                if (!file_exists($layoutPath)) {
+                    throw new \Exception("Layout no encontrado: {$layout}");
+                }
+
+                // El layout usará $content automáticamente
+                require $layoutPath;
+            } else {
+                echo $content;
+            }
+        } catch (\Exception $e) {
+            // Manejo de errores: mostrar mensaje y detener ejecución
+            echo "<h1>Error al cargar la vista o layout</h1>";
+            echo "<p>" . $e->getMessage() . "</p>";
+            exit;
         }
     }
     
