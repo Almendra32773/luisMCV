@@ -123,17 +123,17 @@
 
 <!-- JavaScript para validación -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Validar ISBN
-    const isbnInput = document.getElementById('isbn');
-    isbnInput.addEventListener('blur', function() {
-        let isbn = this.value.replace(/[-\s]/g, '');
-        if (isbn.length !== 13 && isbn.length !== 10 && isbn.length > 0) {
-            alert('El ISBN debe tener 10 o 13 dígitos');
-            this.focus();
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+        // Validar ISBN
+        const isbnInput = document.getElementById('isbn');
+        isbnInput.addEventListener('blur', function() {
+            let isbn = this.value.replace(/[-\s]/g, '');
+            if (isbn.length !== 13 && isbn.length !== 10 && isbn.length > 0) {
+                alert('El ISBN debe tener 10 o 13 dígitos');
+                this.focus();
+            }
+        });
     });
-});
 </script>
 <?php 
 $content = ob_get_clean(); 

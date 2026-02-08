@@ -3,6 +3,7 @@ namespace App\Controllers;
 
 use Core\{Controller, Middleware, Csrf};
 use App\Models\User;
+use RedBeanPHP\R; // Asegurar que la clase R esté disponible
 
 class AuthController extends Controller
 {
@@ -30,7 +31,7 @@ class AuthController extends Controller
         }
 
         // Buscar usuario en tu base de datos (tabla 'users')
-        $user = \R::findOne('user', 'email = ? AND active = 1', [$email]);
+        $user = R::findOne('user', 'email = ? AND active = 1', [$email]);
 
         if (!$user || !password_verify($password, $user->password)) {
             $_SESSION['error'] = 'Credenciales inválidas';
@@ -39,10 +40,20 @@ class AuthController extends Controller
         }
 
         if ($user && password_verify($password, $user->password)) {
-            // ... guardar en sesión ...
-            
-            // REDIRECCIÓN CORRECTA:
-            header('Location: /luisMCV/public/');
+            // Regenerar ID de sesión por seguridad
+            session_regenerate_id(true);
+
+            // Guardar datos de usuario en sesión
+            $_SESSION['user'] = [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role
+            ];
+            $_SESSION['toast'] = 'Login exitoso 🎉';
+
+            // Redirigir al dashboard o página principal
+            header('Location: /dashboard');
             exit;
         }
 
@@ -87,7 +98,7 @@ class AuthController extends Controller
         }
 
         // Verificar si el email ya existe
-        $existingUser = \R::findOne('user', 'email = ?', [$email]);
+        $existingUser = R::findOne('user', 'email = ?', [$email]);
         if ($existingUser) {
             $_SESSION['error'] = 'El email ya está registrado';
             header('Location: /register');
@@ -95,14 +106,14 @@ class AuthController extends Controller
         }
 
         // Crear nuevo usuario
-        $user = \R::dispense('user');
+        $user = R::dispense('user');
         $user->name = $name;
         $user->email = $email;
         $user->password = password_hash($password, PASSWORD_DEFAULT);
         $user->role = 'user'; // Rol por defecto
         $user->active = 1;
         
-        \R::store($user);
+        R::store($user);
 
         $_SESSION['toast'] = 'Cuenta creada correctamente, ahora inicia sesión 👌';
         header('Location: /login');

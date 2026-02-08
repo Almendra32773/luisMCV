@@ -160,281 +160,281 @@
 
 <!-- JavaScript -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const memberSelect = document.getElementById('member_id');
-    const bookSearch = document.getElementById('book_search');
-    const searchBtn = document.getElementById('search-btn');
-    const bookResults = document.getElementById('book-results');
-    const selectedBookInfo = document.getElementById('selected-book-info');
-    const copySelection = document.getElementById('copy-selection');
-    const availableCopiesDiv = document.getElementById('available-copies');
-    const loanDateInput = document.getElementById('loan_date');
-    const loanDaysSelect = document.getElementById('loan_days');
-    const dueDateInput = document.getElementById('due_date');
-    const submitBtn = document.getElementById('submit-btn');
-    const loanSummary = document.getElementById('loan-summary');
-    
-    // Información del miembro seleccionado
-    let selectedMember = null;
-    let selectedBook = null;
-    let selectedCopy = null;
-    
-    // Actualizar fecha de vencimiento
-    function updateDueDate() {
-        const loanDate = new Date(loanDateInput.value);
-        const loanDays = parseInt(loanDaysSelect.value);
-        const dueDate = new Date(loanDate);
-        dueDate.setDate(dueDate.getDate() + loanDays);
+    document.addEventListener('DOMContentLoaded', function() {
+        const memberSelect = document.getElementById('member_id');
+        const bookSearch = document.getElementById('book_search');
+        const searchBtn = document.getElementById('search-btn');
+        const bookResults = document.getElementById('book-results');
+        const selectedBookInfo = document.getElementById('selected-book-info');
+        const copySelection = document.getElementById('copy-selection');
+        const availableCopiesDiv = document.getElementById('available-copies');
+        const loanDateInput = document.getElementById('loan_date');
+        const loanDaysSelect = document.getElementById('loan_days');
+        const dueDateInput = document.getElementById('due_date');
+        const submitBtn = document.getElementById('submit-btn');
+        const loanSummary = document.getElementById('loan-summary');
         
-        dueDateInput.value = dueDate.toISOString().split('T')[0];
+        // Información del miembro seleccionado
+        let selectedMember = null;
+        let selectedBook = null;
+        let selectedCopy = null;
+        
+        // Actualizar fecha de vencimiento
+        function updateDueDate() {
+            const loanDate = new Date(loanDateInput.value);
+            const loanDays = parseInt(loanDaysSelect.value);
+            const dueDate = new Date(loanDate);
+            dueDate.setDate(dueDate.getDate() + loanDays);
+            
+            dueDateInput.value = dueDate.toISOString().split('T')[0];
+            
+            // Actualizar resumen
+            updateLoanSummary();
+        }
         
         // Actualizar resumen
-        updateLoanSummary();
-    }
-    
-    // Actualizar resumen
-    function updateLoanSummary() {
-        const summaryItems = loanSummary.getElementsByTagName('dd');
-        
-        // Socio
-        if (selectedMember) {
-            summaryItems[0].textContent = selectedMember.name;
-            summaryItems[0].className = 'col-sm-8';
-        } else {
-            summaryItems[0].textContent = 'No seleccionado';
-            summaryItems[0].className = 'col-sm-8 text-muted';
-        }
-        
-        // Libro
-        if (selectedBook) {
-            summaryItems[1].textContent = selectedBook.title;
-            summaryItems[1].className = 'col-sm-8';
-        } else {
-            summaryItems[1].textContent = 'No seleccionado';
-            summaryItems[1].className = 'col-sm-8 text-muted';
-        }
-        
-        // Copia
-        if (selectedCopy) {
-            summaryItems[2].textContent = selectedCopy.code;
-            summaryItems[2].className = 'col-sm-8';
-        } else {
-            summaryItems[2].textContent = 'No seleccionada';
-            summaryItems[2].className = 'col-sm-8 text-muted';
-        }
-        
-        // Duración y vencimiento
-        summaryItems[3].textContent = loanDaysSelect.value + ' días';
-        summaryItems[4].textContent = dueDateInput.value.split('-').reverse().join('/');
-        
-        // Habilitar/deshabilitar botón de envío
-        submitBtn.disabled = !(selectedMember && selectedBook && selectedCopy);
-    }
-    
-    // Event listeners
-    loanDateInput.addEventListener('change', updateDueDate);
-    loanDaysSelect.addEventListener('change', updateDueDate);
-    
-    // Inicializar
-    updateDueDate();
-    
-    // Información del socio
-    memberSelect.addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        
-        if (selectedOption.value) {
-            selectedMember = {
-                id: selectedOption.value,
-                name: selectedOption.text.split(' (')[0],
-                maxLoans: selectedOption.dataset.maxLoans,
-                activeLoans: selectedOption.dataset.activeLoans
-            };
+        function updateLoanSummary() {
+            const summaryItems = loanSummary.getElementsByTagName('dd');
             
-            const infoDiv = document.getElementById('member-info');
-            infoDiv.innerHTML = `
-                <div class="alert alert-info mb-0 p-2">
-                    <small>
-                        <i class="bi bi-person-check me-1"></i>
-                        ${selectedMember.name}<br>
-                        <i class="bi bi-book me-1"></i>
-                        Préstamos activos: ${selectedMember.activeLoans}/${selectedMember.maxLoans}
-                    </small>
-                </div>
-            `;
-        } else {
-            selectedMember = null;
-            document.getElementById('member-info').textContent = 'Seleccione un socio para ver información';
+            // Socio
+            if (selectedMember) {
+                summaryItems[0].textContent = selectedMember.name;
+                summaryItems[0].className = 'col-sm-8';
+            } else {
+                summaryItems[0].textContent = 'No seleccionado';
+                summaryItems[0].className = 'col-sm-8 text-muted';
+            }
+            
+            // Libro
+            if (selectedBook) {
+                summaryItems[1].textContent = selectedBook.title;
+                summaryItems[1].className = 'col-sm-8';
+            } else {
+                summaryItems[1].textContent = 'No seleccionado';
+                summaryItems[1].className = 'col-sm-8 text-muted';
+            }
+            
+            // Copia
+            if (selectedCopy) {
+                summaryItems[2].textContent = selectedCopy.code;
+                summaryItems[2].className = 'col-sm-8';
+            } else {
+                summaryItems[2].textContent = 'No seleccionada';
+                summaryItems[2].className = 'col-sm-8 text-muted';
+            }
+            
+            // Duración y vencimiento
+            summaryItems[3].textContent = loanDaysSelect.value + ' días';
+            summaryItems[4].textContent = dueDateInput.value.split('-').reverse().join('/');
+            
+            // Habilitar/deshabilitar botón de envío
+            submitBtn.disabled = !(selectedMember && selectedBook && selectedCopy);
         }
         
-        updateLoanSummary();
-    });
-    
-    // Búsqueda de libros
-    searchBtn.addEventListener('click', searchBooks);
-    bookSearch.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            searchBooks();
-        }
-    });
-    
-    function searchBooks() {
-        const query = bookSearch.value.trim();
-        if (!query) return;
+        // Event listeners
+        loanDateInput.addEventListener('change', updateDueDate);
+        loanDaysSelect.addEventListener('change', updateDueDate);
         
-        fetch(`/api/books/search?q=${encodeURIComponent(query)}`)
-            .then(response => response.json())
-            .then(books => {
-                bookResults.innerHTML = '';
-                bookResults.className = 'mt-2';
+        // Inicializar
+        updateDueDate();
+        
+        // Información del socio
+        memberSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            
+            if (selectedOption.value) {
+                selectedMember = {
+                    id: selectedOption.value,
+                    name: selectedOption.text.split(' (')[0],
+                    maxLoans: selectedOption.dataset.maxLoans,
+                    activeLoans: selectedOption.dataset.activeLoans
+                };
                 
-                if (books.length === 0) {
-                    bookResults.innerHTML = `
-                        <div class="alert alert-warning mb-0">
-                            No se encontraron libros
-                        </div>
-                    `;
-                    return;
-                }
-                
-                const list = document.createElement('div');
-                list.className = 'list-group';
-                
-                books.forEach(book => {
-                    const item = document.createElement('a');
-                    item.href = '#';
-                    item.className = 'list-group-item list-group-item-action';
-                    item.innerHTML = `
-                        <div class="d-flex w-100 justify-content-between">
-                            <h6 class="mb-1">${book.title}</h6>
-                            <small class="text-muted">${book.available_copies} disp.</small>
-                        </div>
-                        <p class="mb-1 small">${book.author}</p>
-                        <small class="text-muted">ISBN: ${book.isbn}</small>
-                    `;
-                    
-                    item.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        selectBook(book);
-                    });
-                    
-                    list.appendChild(item);
-                });
-                
-                bookResults.appendChild(list);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                bookResults.innerHTML = `
-                    <div class="alert alert-danger mb-0">
-                        Error al buscar libros
+                const infoDiv = document.getElementById('member-info');
+                infoDiv.innerHTML = `
+                    <div class="alert alert-info mb-0 p-2">
+                        <small>
+                            <i class="bi bi-person-check me-1"></i>
+                            ${selectedMember.name}<br>
+                            <i class="bi bi-book me-1"></i>
+                            Préstamos activos: ${selectedMember.activeLoans}/${selectedMember.maxLoans}
+                        </small>
                     </div>
                 `;
-            });
-    }
-    
-    function selectBook(book) {
-        selectedBook = book;
+            } else {
+                selectedMember = null;
+                document.getElementById('member-info').textContent = 'Seleccione un socio para ver información';
+            }
+            
+            updateLoanSummary();
+        });
         
-        // Mostrar información del libro
-        document.getElementById('selected-book-title').textContent = book.title;
-        document.getElementById('selected-book-author').textContent = book.author;
-        document.getElementById('selected-book-isbn').textContent = `ISBN: ${book.isbn}`;
-        document.getElementById('selected-book-copies').textContent = `${book.available_copies} copias disponibles`;
-        document.getElementById('selected-isbn').value = book.isbn;
+        // Búsqueda de libros
+        searchBtn.addEventListener('click', searchBooks);
+        bookSearch.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                searchBooks();
+            }
+        });
         
-        selectedBookInfo.classList.remove('d-none');
-        bookResults.innerHTML = '';
-        bookResults.className = 'mt-2 d-none';
-        bookSearch.value = '';
-        
-        // Cargar copias disponibles
-        loadAvailableCopies(book.isbn);
-        
-        updateLoanSummary();
-    }
-    
-    function loadAvailableCopies(isbn) {
-        fetch(`/api/books/${isbn}/copies`)
-            .then(response => response.json())
-            .then(copies => {
-                copySelection.classList.remove('d-none');
-                availableCopiesDiv.innerHTML = '';
-                
-                if (copies.length === 0) {
-                    availableCopiesDiv.innerHTML = `
-                        <div class="alert alert-warning mb-0">
-                            No hay copias disponibles
-                        </div>
-                    `;
-                    return;
-                }
-                
-                copies.forEach(copy => {
-                    const col = document.createElement('div');
-                    col.className = 'col-md-3 col-6 mb-2';
+        function searchBooks() {
+            const query = bookSearch.value.trim();
+            if (!query) return;
+            
+            fetch(`/api/books/search?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(books => {
+                    bookResults.innerHTML = '';
+                    bookResults.className = 'mt-2';
                     
-                    const card = document.createElement('div');
-                    card.className = 'card h-100';
+                    if (books.length === 0) {
+                        bookResults.innerHTML = `
+                            <div class="alert alert-warning mb-0">
+                                No se encontraron libros
+                            </div>
+                        `;
+                        return;
+                    }
                     
-                    const cardBody = document.createElement('div');
-                    cardBody.className = 'card-body text-center';
+                    const list = document.createElement('div');
+                    list.className = 'list-group';
                     
-                    const title = document.createElement('h6');
-                    title.className = 'card-title';
-                    title.textContent = copy.copy_code;
-                    
-                    const selectBtn = document.createElement('button');
-                    selectBtn.type = 'button';
-                    selectBtn.className = 'btn btn-sm btn-outline-primary w-100 mt-2';
-                    selectBtn.textContent = 'Seleccionar';
-                    selectBtn.addEventListener('click', function() {
-                        selectCopy(copy);
+                    books.forEach(book => {
+                        const item = document.createElement('a');
+                        item.href = '#';
+                        item.className = 'list-group-item list-group-item-action';
+                        item.innerHTML = `
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">${book.title}</h6>
+                                <small class="text-muted">${book.available_copies} disp.</small>
+                            </div>
+                            <p class="mb-1 small">${book.author}</p>
+                            <small class="text-muted">ISBN: ${book.isbn}</small>
+                        `;
                         
-                        // Remover selección anterior
-                        document.querySelectorAll('.card.border-primary').forEach(card => {
-                            card.classList.remove('border-primary');
+                        item.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            selectBook(book);
                         });
                         
-                        // Marcar como seleccionada
-                        card.classList.add('border-primary');
+                        list.appendChild(item);
                     });
                     
-                    cardBody.appendChild(title);
-                    cardBody.appendChild(selectBtn);
-                    card.appendChild(cardBody);
-                    col.appendChild(card);
-                    availableCopiesDiv.appendChild(col);
+                    bookResults.appendChild(list);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    bookResults.innerHTML = `
+                        <div class="alert alert-danger mb-0">
+                            Error al buscar libros
+                        </div>
+                    `;
                 });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                availableCopiesDiv.innerHTML = `
-                    <div class="alert alert-danger mb-0">
-                        Error al cargar copias
-                    </div>
-                `;
-            });
-    }
-    
-    function selectCopy(copy) {
-        selectedCopy = copy;
-        document.getElementById('selected-copy-id').value = copy.id;
-        updateLoanSummary();
-    }
-    
-    // Limpiar selección de libro
-    document.getElementById('clear-book').addEventListener('click', function() {
-        selectedBook = null;
-        selectedCopy = null;
-        selectedBookInfo.classList.add('d-none');
-        copySelection.classList.add('d-none');
-        availableCopiesDiv.innerHTML = '';
-        document.getElementById('selected-isbn').value = '';
-        document.getElementById('selected-copy-id').value = '';
-        updateLoanSummary();
+        }
+        
+        function selectBook(book) {
+            selectedBook = book;
+            
+            // Mostrar información del libro
+            document.getElementById('selected-book-title').textContent = book.title;
+            document.getElementById('selected-book-author').textContent = book.author;
+            document.getElementById('selected-book-isbn').textContent = `ISBN: ${book.isbn}`;
+            document.getElementById('selected-book-copies').textContent = `${book.available_copies} copias disponibles`;
+            document.getElementById('selected-isbn').value = book.isbn;
+            
+            selectedBookInfo.classList.remove('d-none');
+            bookResults.innerHTML = '';
+            bookResults.className = 'mt-2 d-none';
+            bookSearch.value = '';
+            
+            // Cargar copias disponibles
+            loadAvailableCopies(book.isbn);
+            
+            updateLoanSummary();
+        }
+        
+        function loadAvailableCopies(isbn) {
+            fetch(`/api/books/${isbn}/copies`)
+                .then(response => response.json())
+                .then(copies => {
+                    copySelection.classList.remove('d-none');
+                    availableCopiesDiv.innerHTML = '';
+                    
+                    if (copies.length === 0) {
+                        availableCopiesDiv.innerHTML = `
+                            <div class="alert alert-warning mb-0">
+                                No hay copias disponibles
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    copies.forEach(copy => {
+                        const col = document.createElement('div');
+                        col.className = 'col-md-3 col-6 mb-2';
+                        
+                        const card = document.createElement('div');
+                        card.className = 'card h-100';
+                        
+                        const cardBody = document.createElement('div');
+                        cardBody.className = 'card-body text-center';
+                        
+                        const title = document.createElement('h6');
+                        title.className = 'card-title';
+                        title.textContent = copy.copy_code;
+                        
+                        const selectBtn = document.createElement('button');
+                        selectBtn.type = 'button';
+                        selectBtn.className = 'btn btn-sm btn-outline-primary w-100 mt-2';
+                        selectBtn.textContent = 'Seleccionar';
+                        selectBtn.addEventListener('click', function() {
+                            selectCopy(copy);
+                            
+                            // Remover selección anterior
+                            document.querySelectorAll('.card.border-primary').forEach(card => {
+                                card.classList.remove('border-primary');
+                            });
+                            
+                            // Marcar como seleccionada
+                            card.classList.add('border-primary');
+                        });
+                        
+                        cardBody.appendChild(title);
+                        cardBody.appendChild(selectBtn);
+                        card.appendChild(cardBody);
+                        col.appendChild(card);
+                        availableCopiesDiv.appendChild(col);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    availableCopiesDiv.innerHTML = `
+                        <div class="alert alert-danger mb-0">
+                            Error al cargar copias
+                        </div>
+                    `;
+                });
+        }
+        
+        function selectCopy(copy) {
+            selectedCopy = copy;
+            document.getElementById('selected-copy-id').value = copy.id;
+            updateLoanSummary();
+        }
+        
+        // Limpiar selección de libro
+        document.getElementById('clear-book').addEventListener('click', function() {
+            selectedBook = null;
+            selectedCopy = null;
+            selectedBookInfo.classList.add('d-none');
+            copySelection.classList.add('d-none');
+            availableCopiesDiv.innerHTML = '';
+            document.getElementById('selected-isbn').value = '';
+            document.getElementById('selected-copy-id').value = '';
+            updateLoanSummary();
+        });
     });
-});
 </script>
 <?php 
 $content = ob_get_clean(); 

@@ -88,19 +88,24 @@ class BookController extends Controller
         if (!empty($errors)) {
             $_SESSION['error'] = implode('<br>', $errors);
             $this->redirect('/books/create');
+            return;
         }
         
         if (Book::exists($data['isbn'])) {
             $_SESSION['error'] = 'El ISBN ya está registrado';
             $this->redirect('/books/create');
+            return;
+
         }
         
         if (Book::create($data)) {
             $_SESSION['success'] = 'Libro creado exitosamente';
             $this->redirect('/books');
+            return;
         } else {
             $_SESSION['error'] = 'Error al crear el libro';
             $this->redirect('/books/create');
+            return;
         }
     }
     

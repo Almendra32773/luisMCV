@@ -134,6 +134,7 @@
                                                   action="/loans/<?= $loan['id'] ?>/return" 
                                                   class="d-inline"
                                                   onsubmit="return confirm('¿Marcar como devuelto?');">
+                                                <input type="hidden" name="csrf_token" value="<?= \Core\Csrf::get() ?>">
                                                 <button type="submit" class="btn btn-outline-success" 
                                                         data-bs-toggle="tooltip" title="Devolver">
                                                     <i class="bi bi-check-circle"></i>
@@ -210,6 +211,7 @@
                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                                                     <?php if ($loan['status'] == 'active'): ?>
                                                         <form method="POST" action="/loans/<?= $loan['id'] ?>/return" class="d-inline">
+                                                            <input type="hidden" name="csrf_token" value="<?= \Core\Csrf::get() ?>">
                                                             <button type="submit" class="btn btn-success">
                                                                 Marcar como Devuelto
                                                             </button>

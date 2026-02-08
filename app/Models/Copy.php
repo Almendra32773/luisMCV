@@ -5,14 +5,14 @@ use Core\Model;
 
 class Copy extends Model
 {
-    protected $table = 'copy';
+    protected $table = 'copies';
     
     /**
      * Obtener todas las copias de un libro
      */
     public static function getByBook($isbn)
     {
-        return \R::findAll('copy', 
+        return \R::findAll('copies', 
             'isbn = ? AND active = 1 ORDER BY copy_code', 
             [$isbn]);
     }
@@ -22,7 +22,7 @@ class Copy extends Model
      */
     public static function getAvailableByBook($isbn)
     {
-        return \R::findAll('copy', 
+        return \R::findAll('copies', 
             'isbn = ? AND status = ? AND active = 1 ORDER BY copy_code', 
             [$isbn, 'available']);
     }
@@ -32,7 +32,7 @@ class Copy extends Model
      */
     public static function find($id)
     {
-        return \R::findOne('copy', 'id = ?', [$id]);
+        return \R::findOne('copies', 'id = ?', [$id]);
     }
     
     /**
@@ -40,7 +40,7 @@ class Copy extends Model
      */
     public static function findByCode($copyCode)
     {
-        return \R::findOne('copy', 'copy_code = ? AND active = 1', [$copyCode]);
+        return \R::findOne('copies', 'copy_code = ? AND active = 1', [$copyCode]);
     }
     
     /**
@@ -49,14 +49,14 @@ class Copy extends Model
     public static function create($isbn, $copyCode = null)
     {
         try {
-            $copy = \R::dispense('copy');
+            $copy = \R::dispense('copies');
             $copy->isbn = $isbn;
             
             if ($copyCode) {
                 $copy->copy_code = $copyCode;
             } else {
                 // Generar código automático
-                $lastCopy = \R::findOne('copy', 
+                $lastCopy = \R::findOne('copies', 
                     'isbn = ? ORDER BY copy_code DESC', 
                     [$isbn]);
                 
@@ -162,7 +162,7 @@ class Copy extends Model
         
         $sql = "
             SELECT status, COUNT(*) as count
-            FROM copy
+            FROM copies
             WHERE active = 1
             GROUP BY status
         ";

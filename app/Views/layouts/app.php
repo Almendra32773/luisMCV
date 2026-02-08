@@ -82,37 +82,37 @@
                     <ul class="nav flex-column">
                         <li class="nav-item">
                             <a class="nav-link <?= ($_SERVER['REQUEST_URI'] == '/') ? 'active' : '' ?>" 
-                               href="/luisMCV/public/dashboard">
+                               href="/dashboard">
                                 <i class="bi bi-house-door"></i> Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <?= strpos($_SERVER['REQUEST_URI'], '/books') === 0 ? 'active' : '' ?>" 
-                               href="/luisMCV/public/books">
+                               href="/books">
                                 <i class="bi bi-book"></i> Libros
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <?= strpos($_SERVER['REQUEST_URI'], '/members') === 0 ? 'active' : '' ?>" 
-                               href="/luisMCV/public/members">
+                               href="/members">
                                 <i class="bi bi-people"></i> Socios
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <?= strpos($_SERVER['REQUEST_URI'], '/loans') === 0 ? 'active' : '' ?>" 
-                               href="/luisMCV/public/loans">
+                               href="/loans">
                                 <i class="bi bi-arrow-left-right"></i> Préstamos
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <?= strpos($_SERVER['REQUEST_URI'], '/categories') === 0 ? 'active' : '' ?>" 
-                               href="/luisMCV/public/categories">
+                               href="/categories">
                                 <i class="bi bi-tags"></i> Categorías
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <?= strpos($_SERVER['REQUEST_URI'], '/users') === 0 ? 'active' : '' ?>" 
-                               href="/luisMCV/public/users">
+                               href="/users">
                                 <i class="bi bi-person-badge"></i> Usuarios
                             </a>
                         </li>

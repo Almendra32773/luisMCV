@@ -2,10 +2,11 @@
 namespace App\Models;
 
 use Core\Model;
+use RedBeanPHP\R;
 
 class Member extends Model
 {
-    protected $table = 'member';
+    protected static string $table = 'members'; // Cambiado a estática y tipada para coincidir con la clase base
     
     // ============================================
     // MÉTODOS DE CONSULTA
@@ -33,8 +34,8 @@ class Member extends Model
         
         $sql = "
             SELECT m.*, 
-                   (SELECT COUNT(*) FROM loan l WHERE l.member_id = m.id AND l.status = 'active') as active_loans
-            FROM member m
+                   (SELECT COUNT(*) FROM loans l WHERE l.member_id = m.id AND l.status = 'active') as active_loans
+            FROM members m
             WHERE {$where}
             ORDER BY m.first_name, m.last_name
             LIMIT ? OFFSET ?
@@ -43,7 +44,7 @@ class Member extends Model
         $params[] = $limit;
         $params[] = $offset;
         
-        return \R::getAll($sql, $params);
+        return R::getAll($sql, $params);
     }
     
     /**
@@ -66,7 +67,7 @@ class Member extends Model
             $params = array_merge($params, [$searchTerm, $searchTerm, $searchTerm, $searchTerm]);
         }
         
-        return \R::count('member', $where, $params);
+        return R::count('members', $where, $params);
     }
     
     /**
@@ -76,8 +77,8 @@ class Member extends Model
     {
         $sql = "
             SELECT m.*, 
-                   (SELECT COUNT(*) FROM loan l WHERE l.member_id = m.id AND l.status = 'active') as active_loans
-            FROM member m
+                   (SELECT COUNT(*) FROM loans l WHERE l.member_id = m.id AND l.status = 'active') as active_loans
+            FROM members m
             WHERE m.active = 1 AND 
                   (m.first_name LIKE ? OR m.last_name LIKE ? OR m.email LIKE ? OR m.member_code LIKE ?)
             ORDER BY m.first_name, m.last_name
@@ -85,7 +86,7 @@ class Member extends Model
         ";
         
         $searchTerm = "%{$query}%";
-        return \R::getAll($sql, [$searchTerm, $searchTerm, $searchTerm, $searchTerm, $limit]);
+        return R::getAll($sql, [$searchTerm, $searchTerm, $searchTerm, $searchTerm, $limit]);
     }
     
     /**
@@ -95,13 +96,13 @@ class Member extends Model
     {
         $sql = "
             SELECT m.*, 
-                   (SELECT COUNT(*) FROM loan l WHERE l.member_id = m.id AND l.status = 'active') as active_loans
-            FROM member m
+                   (SELECT COUNT(*) FROM loans l WHERE l.member_id = m.id AND l.status = 'active') as active_loans
+            FROM members m
             WHERE m.active = 1
             ORDER BY m.first_name, m.last_name
         ";
         
-        return \R::getAll($sql);
+        return R::getAll($sql);
     }
     
     /**
@@ -109,7 +110,7 @@ class Member extends Model
      */
     public static function find($id)
     {
-        return \R::findOne('member', 'id = ?', [$id]);
+        return R::findOne('members', 'id = ?', [$id]);
     }
     
     /**
@@ -117,7 +118,7 @@ class Member extends Model
      */
     public static function findByEmail($email)
     {
-        return \R::findOne('member', 'email = ?', [$email]);
+        return R::findOne('members', 'email = ?', [$email]);
     }
     
     /**
@@ -125,7 +126,7 @@ class Member extends Model
      */
     public static function emailExists($email)
     {
-        return \R::count('member', 'email = ?', [$email]) > 0;
+        return R::count('members', 'email = ?', [$email]) > 0;
     }
     
     /**
@@ -138,7 +139,7 @@ class Member extends Model
         
         do {
             $memberCode = 'MEM' . $initials . substr($timestamp, -4);
-            $exists = \R::count('member', 'member_code = ?', [$memberCode]);
+            $exists = R::count('members', 'member_code = ?', [$memberCode]);
             $timestamp++;
         } while ($exists > 0);
         
@@ -156,14 +157,14 @@ class Member extends Model
     {
         $sql = "
             SELECT l.*, b.title, b.author, b.isbn, c.copy_code
-            FROM loan l
-            JOIN copy c ON l.copy_id = c.id
-            JOIN book b ON c.isbn = b.isbn
+            FROM loans l
+            JOIN copies c ON l.copy_id = c.id
+            JOIN books b ON c.isbn = b.isbn
             WHERE l.member_id = ? AND l.status = 'active'
             ORDER BY l.due_date
         ";
         
-        return \R::getAll($sql, [$memberId]);
+        return R::getAll($sql, [$memberId]);
     }
     
     /**
@@ -173,15 +174,15 @@ class Member extends Model
     {
         $sql = "
             SELECT l.*, b.title, b.author, c.copy_code
-            FROM loan l
-            JOIN copy c ON l.copy_id = c.id
-            JOIN book b ON c.isbn = b.isbn
+            FROM loans l
+            JOIN copies c ON l.copy_id = c.id
+            JOIN books b ON c.isbn = b.isbn
             WHERE l.member_id = ?
             ORDER BY l.loan_date DESC
             LIMIT ?
         ";
         
-        return \R::getAll($sql, [$memberId, $limit]);
+        return R::getAll($sql, [$memberId, $limit]);
     }
     
     /**
@@ -192,7 +193,7 @@ class Member extends Model
         $member = self::find($memberId);
         if (!$member) return false;
         
-        $activeLoans = \R::count('loan', 
+        $activeLoans = R::count('loans', 
             'member_id = ? AND status = ?', 
             [$memberId, 'active']);
         
@@ -204,7 +205,7 @@ class Member extends Model
      */
     public static function countActiveLoans($memberId)
     {
-        return \R::count('loan', 
+        return R::count('loans', 
             'member_id = ? AND status = ?', 
             [$memberId, 'active']);
     }
@@ -216,11 +217,11 @@ class Member extends Model
     {
         $sql = "
             SELECT COUNT(*) as count
-            FROM loan
+            FROM loans
             WHERE member_id = ? AND status = 'active' AND due_date < CURDATE()
         ";
         
-        $result = \R::getRow($sql, [$memberId]);
+        $result = R::getRow($sql, [$memberId]);
         return $result['count'] ?? 0;
     }
     
@@ -234,7 +235,7 @@ class Member extends Model
     public static function create($data)
     {
         try {
-            $member = \R::dispense('member');
+            $member = R::dispense('members');
             
             // Generar código de socio
             $memberCode = self::generateMemberCode($data['first_name'], $data['last_name']);
@@ -250,7 +251,7 @@ class Member extends Model
             $member->notes = $data['notes'] ?? null;
             $member->active = 1;
             
-            \R::store($member);
+            R::store($member);
             return $member->id;
             
         } catch (\Exception $e) {
@@ -265,7 +266,7 @@ class Member extends Model
     public static function update($id, $data)
     {
         try {
-            $member = \R::findOne('member', 'id = ?', [$id]);
+            $member = R::findOne('members', 'id = ?', [$id]);
             if (!$member) return false;
             
             if (isset($data['first_name'])) $member->first_name = $data['first_name'];
@@ -278,7 +279,7 @@ class Member extends Model
             if (isset($data['notes'])) $member->notes = $data['notes'];
             if (isset($data['active'])) $member->active = $data['active'];
             
-            \R::store($member);
+            R::store($member);
             return true;
             
         } catch (\Exception $e) {
@@ -290,13 +291,13 @@ class Member extends Model
     /**
      * Eliminar socio (soft delete)
      */
-    public static function softDelete($id)
+    public static function softDelete($id, $column = 'active')
     {
         try {
-            $member = \R::findOne('member', 'id = ?', [$id]);
+            $member = R::findOne('members', 'id = ?', [$id]);
             if ($member) {
-                $member->active = 0;
-                \R::store($member);
+                $member->$column = 0;
+                R::store($member);
                 return true;
             }
             return false;
@@ -323,16 +324,16 @@ class Member extends Model
         ];
         
         // Total de socios
-        $stats['total_members'] = \R::count('member');
-        $stats['active_members'] = \R::count('member', 'active = 1');
+        $stats['total_members'] = R::count('members');
+        $stats['active_members'] = R::count('members', 'active = 1');
         
         // Socios con préstamos activos
         $sql = "
             SELECT COUNT(DISTINCT member_id) as count
-            FROM loan 
+            FROM loans 
             WHERE status = 'active'
         ";
-        $result = \R::getRow($sql);
+        $result = R::getRow($sql);
         $stats['members_with_loans'] = $result['count'] ?? 0;
         
         // Promedio de préstamos por socio activo
@@ -341,13 +342,13 @@ class Member extends Model
                 SELECT AVG(loan_count) as avg
                 FROM (
                     SELECT COUNT(*) as loan_count
-                    FROM loan l
-                    JOIN member m ON l.member_id = m.id
+                    FROM loans l
+                    JOIN members m ON l.member_id = m.id
                     WHERE m.active = 1
                     GROUP BY l.member_id
                 ) as subquery
             ";
-            $result = \R::getRow($sql);
+            $result = R::getRow($sql);
             $stats['avg_loans_per_member'] = number_format($result['avg'] ?? 0, 1);
         }
         
@@ -370,7 +371,7 @@ class Member extends Model
         $stats['active_loans'] = self::countActiveLoans($memberId);
         
         // Total préstamos
-        $stats['total_loans'] = \R::count('loan', 'member_id = ?', [$memberId]);
+        $stats['total_loans'] = R::count('loans', 'member_id = ?', [$memberId]);
         
         // Préstamos vencidos
         $stats['overdue_loans'] = self::countOverdueLoans($memberId);
@@ -378,10 +379,10 @@ class Member extends Model
         // Multas totales
         $sql = "
             SELECT SUM(fine) as total
-            FROM loan
+            FROM loans
             WHERE member_id = ? AND fine > 0
         ";
-        $result = \R::getRow($sql, [$memberId]);
+        $result = R::getRow($sql, [$memberId]);
         $stats['total_fines'] = $result['total'] ?? 0;
         
         return $stats;

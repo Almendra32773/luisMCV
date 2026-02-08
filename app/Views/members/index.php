@@ -101,8 +101,7 @@
                                 </td>
                                 <td>
                                     <?php
-                                    $activeLoans = \R::count('loan', 'member_id = ? AND status = ?', 
-                                        [$member['id'], 'active']);
+                                        $activeLoans = $member['active_loans'] ?? 0;
                                     ?>
                                     <div class="d-flex align-items-center">
                                         <div class="progress flex-grow-1 me-2" style="height: 8px;">

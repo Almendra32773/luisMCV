@@ -34,13 +34,13 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li>
-                                <a class="dropdown-item" href="#">
+                                <a class="dropdown-item" href="/profile">
                                     <i class="bi bi-person"></i> Mi Perfil
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <form method="POST" action="/luisMCV/public/logout" class="dropdown-item p-0">
+                                <form method="POST" action="/logout" class="dropdown-item p-0">
                                     <button type="submit" class="btn btn-link text-decoration-none w-100 text-start">
                                         <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
                                     </button>
@@ -50,12 +50,12 @@
                     </li>
                 <?php else: ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="/luisMCV/public/login">
+                        <a class="nav-link" href="/login">
                             <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/luisMCV/public/register">
+                        <a class="nav-link" href="/register">
                             <i class="bi bi-person-plus"></i> Registrarse
                         </a>
                     </li>

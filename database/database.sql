@@ -33,7 +33,7 @@ CREATE TABLE `users` (
 -- ============================================
 
 -- Tabla: categorias (actualizada)
-CREATE TABLE `categories` (
+CREATE TABLE `category` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
   `description` TEXT DEFAULT NULL,
@@ -71,8 +71,8 @@ CREATE TABLE `book_category` (
   `category_id` INT(11) NOT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`isbn`, `category_id`),
-  FOREIGN KEY (`isbn`) REFERENCES `books` (`isbn`) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`isbn`) REFERENCES `book` (`isbn`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`category_id`) REFERENCES `category` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   INDEX `idx_category` (`category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -148,7 +148,7 @@ INSERT INTO `users` (`name`, `email`, `password`, `role`) VALUES
 ('Usuario de Prueba', 'user_test@example.com', '$2y$10$0IErDRhTvLfBmFt/L8aqP.tcGvbZgiiPvCIJrMuz6P8JhuwRcT8Q6', 'user');
 
 -- Categorías
-INSERT INTO `categories` (`name`, `description`) VALUES
+INSERT INTO `category` (`name`, `description`) VALUES
 ('Ciencia Ficción', 'Novelas de ciencia ficción y fantasía'),
 ('Literatura', 'Literatura clásica y contemporánea'),
 ('Ciencia', 'Libros científicos y técnicos'),

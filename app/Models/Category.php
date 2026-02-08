@@ -2,17 +2,18 @@
 namespace App\Models;
 
 use Core\Model;
+use RedBeanPHP\R;
 
 class Category extends Model
 {
-    protected $table = 'category';
+    protected static string $table = 'category'; // Cambiado a estática y tipada para coincidir con la clase base
     
     /**
      * Obtener todas las categorías
      */
     public static function getAll()
     {
-        return \R::findAll('category', 'ORDER BY name');
+        return R::findAll('category', 'ORDER BY name');
     }
     
     /**
@@ -25,12 +26,12 @@ class Category extends Model
                    COUNT(DISTINCT bc.isbn) as book_count
             FROM category c
             LEFT JOIN book_category bc ON c.id = bc.category_id
-            LEFT JOIN book b ON bc.isbn = b.isbn AND b.active = 1
+            LEFT JOIN books b ON bc.isbn = b.isbn AND b.active = 1
             GROUP BY c.id
             ORDER BY c.name
         ";
         
-        return \R::getAll($sql) ?? [];
+        return R::getAll($sql) ?? [];
     }
     
     /**
@@ -38,7 +39,7 @@ class Category extends Model
      */
     public static function find($id)
     {
-        return \R::findOne('category', 'id = ?', [$id]);
+        return R::findOne('category', 'id = ?', [$id]);
     }
     
     /**
@@ -46,15 +47,20 @@ class Category extends Model
      */
     public static function findByName($name)
     {
-        return \R::findOne('category', 'name = ?', [$name]);
+        return R::findOne('category', 'name = ?', [$name]);
     }
     
     /**
      * Verificar si existe categoría
      */
-    public static function exists($name)
+    public static function exists($column, $value = null)
     {
-        return \R::count('category', 'name = ?', [$name]) > 0;
+        if (func_num_args() === 1) {
+            $value = $column;
+            $column = 'name';
+        }
+        
+        return \R::findOne('category', "$column = ?", [$value]) !== null;
     }
     
     /**
@@ -65,11 +71,11 @@ class Category extends Model
         $sql = "
             SELECT COUNT(DISTINCT bc.isbn) as count
             FROM book_category bc
-            JOIN book b ON bc.isbn = b.isbn AND b.active = 1
+            JOIN books b ON bc.isbn = b.isbn AND b.active = 1
             WHERE bc.category_id = ?
         ";
         
-        $result = \R::getRow($sql, [$categoryId]);
+        $result = R::getRow($sql, [$categoryId]);
         return $result['count'] ?? 0;
     }
     
@@ -79,11 +85,11 @@ class Category extends Model
     public static function create($data)
     {
         try {
-            $category = \R::dispense('category');
+            $category = R::dispense('category');
             $category->name = $data['name'];
             $category->description = $data['description'] ?? null;
             
-            \R::store($category);
+            R::store($category);
             return $category->id;
             
         } catch (\Exception $e) {
@@ -98,13 +104,13 @@ class Category extends Model
     public static function update($id, $data)
     {
         try {
-            $category = \R::findOne('category', 'id = ?', [$id]);
+            $category = R::findOne('category', 'id = ?', [$id]);
             if (!$category) return false;
             
             $category->name = $data['name'];
             $category->description = $data['description'] ?? null;
             
-            \R::store($category);
+            R::store($category);
             return true;
             
         } catch (\Exception $e) {
@@ -119,9 +125,9 @@ class Category extends Model
     public static function delete($id)
     {
         try {
-            $category = \R::findOne('category', 'id = ?', [$id]);
+            $category = R::findOne('category', 'id = ?', [$id]);
             if ($category) {
-                \R::trash($category);
+                R::trash($category);
                 return true;
             }
             return false;

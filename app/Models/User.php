@@ -5,14 +5,14 @@ use Core\Model;
 
 class User extends Model
 {
-    protected $table = 'user';
+    protected $table = 'users';
     
     /**
      * Autenticar usuario
      */
     public static function authenticate($email, $password)
     {
-        $user = \R::findOne('user', 'email = ? AND active = 1', [$email]);
+        $user = \R::findOne('users', 'email = ? AND active = 1', [$email]);
         
         if ($user && password_verify($password, $user->password)) {
             return $user;
@@ -23,7 +23,7 @@ class User extends Model
 
     public static function allOrdered()
     {
-        return \R::findAll('user', ' ORDER BY created_at DESC');
+        return \R::findAll('users', ' ORDER BY created_at DESC');
     }
     
     /**
@@ -31,7 +31,7 @@ class User extends Model
      */
     public static function emailExists($email)
     {
-        return \R::count('user', 'email = ?', [$email]) > 0;
+        return \R::count('users', 'email = ?', [$email]) > 0;
     }
     
     /**
@@ -40,7 +40,7 @@ class User extends Model
     public static function createWithHash($data)
     {
         try {
-            $user = \R::dispense('user');
+            $user = \R::dispense('users');
             $user->name = $data['name'];
             $user->email = $data['email'];
             $user->password = password_hash($data['password'], PASSWORD_DEFAULT);
@@ -74,7 +74,7 @@ class User extends Model
      */
     public static function findById($id)
     {
-        return \R::findOne('user', 'id = ?', [$id]);
+        return \R::findOne('users', 'id = ?', [$id]);
     }
     
     /**
@@ -82,7 +82,7 @@ class User extends Model
      */
     public static function findByEmail($email)
     {
-        return \R::findOne('user', 'email = ?', [$email]);
+        return \R::findOne('users', 'email = ?', [$email]);
     }
     
     /**
@@ -90,7 +90,7 @@ class User extends Model
      */
     public static function getAll($limit = 100)
     {
-        return \R::findAll('user', 'ORDER BY created_at DESC LIMIT ?', [$limit]);
+        return \R::findAll('users', 'ORDER BY created_at DESC LIMIT ?', [$limit]);
     }
     
     /**

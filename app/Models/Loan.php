@@ -2,10 +2,11 @@
 namespace App\Models;
 
 use Core\Model;
+use RedBeanPHP\R;
 
 class Loan extends Model
 {
-    protected $table = 'loan';
+    protected static string $table = 'loans'; // Cambiado a estática y tipada para coincidir con la clase base
     
     // ============================================
     // MÉTODOS DE CONSULTA
@@ -39,10 +40,10 @@ class Loan extends Model
                    m.first_name, m.last_name, m.member_code, m.id as member_id,
                    b.title, b.author, b.isbn,
                    c.copy_code
-            FROM loan l
-            JOIN member m ON l.member_id = m.id
-            JOIN copy c ON l.copy_id = c.id
-            JOIN book b ON c.isbn = b.isbn
+            FROM loans l
+            JOIN members m ON l.member_id = m.id
+            JOIN copies c ON l.copy_id = c.id
+            JOIN books b ON c.isbn = b.isbn
             WHERE {$where}
             ORDER BY l.loan_date DESC, l.id DESC
             LIMIT ? OFFSET ?
@@ -51,7 +52,7 @@ class Loan extends Model
         $params[] = $limit;
         $params[] = $offset;
         
-        return \R::getAll($sql, $params);
+        return R::getAll($sql, $params);
     }
     
     /**
@@ -77,7 +78,7 @@ class Loan extends Model
             $params[] = $dateTo;
         }
         
-        return \R::count('loan', $where, $params);
+        return R::count('loans', $where, $params);
     }
     
     /**
@@ -89,16 +90,16 @@ class Loan extends Model
             SELECT l.*, 
                    m.first_name, m.last_name,
                    b.title
-            FROM loan l
-            JOIN member m ON l.member_id = m.id
-            JOIN copy c ON l.copy_id = c.id
-            JOIN book b ON c.isbn = b.isbn
+            FROM loans l
+            JOIN members m ON l.member_id = m.id
+            JOIN copies c ON l.copy_id = c.id
+            JOIN books b ON c.isbn = b.isbn
             WHERE l.status = 'active'
             ORDER BY l.loan_date DESC
             LIMIT ?
         ";
         
-        return \R::getAll($sql, [$limit]);
+        return R::getAll($sql, [$limit]);
     }
     
     /**
@@ -112,16 +113,16 @@ class Loan extends Model
                    b.title, b.author, b.isbn,
                    c.copy_code,
                    DATEDIFF(CURDATE(), l.due_date) as days_overdue
-            FROM loan l
-            JOIN member m ON l.member_id = m.id
-            JOIN copy c ON l.copy_id = c.id
-            JOIN book b ON c.isbn = b.isbn
+            FROM loans l
+            JOIN members m ON l.member_id = m.id
+            JOIN copies c ON l.copy_id = c.id
+            JOIN books b ON c.isbn = b.isbn
             WHERE l.status = 'active' AND l.due_date < CURDATE()
             ORDER BY l.due_date ASC
             LIMIT ? OFFSET ?
         ";
         
-        return \R::getAll($sql, [$limit, $offset]);
+        return R::getAll($sql, [$limit, $offset]);
     }
     
     /**
@@ -129,7 +130,7 @@ class Loan extends Model
      */
     public static function countOverdue()
     {
-        return \R::count('loan', 
+        return R::count('loans', 
             'status = ? AND due_date < CURDATE()', 
             ['active']);
     }
@@ -143,16 +144,16 @@ class Loan extends Model
             SELECT l.*, 
                    m.first_name, m.last_name, m.member_code,
                    b.title
-            FROM loan l
-            JOIN member m ON l.member_id = m.id
-            JOIN copy c ON l.copy_id = c.id
-            JOIN book b ON c.isbn = b.isbn
+            FROM loans l
+            JOIN members m ON l.member_id = m.id
+            JOIN copies c ON l.copy_id = c.id
+            JOIN books b ON c.isbn = b.isbn
             WHERE l.status = 'active' AND l.due_date < CURDATE()
             ORDER BY l.due_date ASC
             LIMIT ?
         ";
         
-        return \R::getAll($sql, [$limit]);
+        return R::getAll($sql, [$limit]);
     }
     
     /**
@@ -165,14 +166,14 @@ class Loan extends Model
                    m.first_name, m.last_name, m.member_code, m.email, m.phone,
                    b.title, b.author, b.isbn,
                    c.copy_code
-            FROM loan l
-            JOIN member m ON l.member_id = m.id
-            JOIN copy c ON l.copy_id = c.id
-            JOIN book b ON c.isbn = b.isbn
+            FROM loans l
+            JOIN members m ON l.member_id = m.id
+            JOIN copies c ON l.copy_id = c.id
+            JOIN books b ON c.isbn = b.isbn
             WHERE l.id = ?
         ";
         
-        return \R::getRow($sql, [$id]);
+        return R::getRow($sql, [$id]);
     }
     
     /**
@@ -180,7 +181,7 @@ class Loan extends Model
      */
     public static function isOverdue($loanId)
     {
-        $loan = \R::findOne('loan', 'id = ? AND status = ?', [$loanId, 'active']);
+        $loan = R::findOne('loans', 'id = ? AND status = ?', [$loanId, 'active']);
         if ($loan && strtotime($loan->due_date) < time()) {
             return true;
         }
@@ -197,7 +198,7 @@ class Loan extends Model
     public static function create($data)
     {
         try {
-            \R::begin();
+            R::begin();
             
             // Calcular fecha de vencimiento
             $loanDate = new \DateTime($data['loan_date']);
@@ -205,7 +206,7 @@ class Loan extends Model
             $dueDate->modify('+' . $data['loan_days'] . ' days');
             
             // Crear préstamo
-            $loan = \R::dispense('loan');
+            $loan = R::dispense('loans');
             $loan->member_id = $data['member_id'];
             $loan->copy_id = $data['copy_id'];
             $loan->loan_date = $loanDate->format('Y-m-d');
@@ -215,27 +216,27 @@ class Loan extends Model
             $loan->fine = 0.00;
             $loan->notes = $data['notes'] ?? null;
             
-            \R::store($loan);
+            R::store($loan);
             
             // Actualizar estado de la copia
-            $copy = \R::findOne('copy', 'id = ?', [$data['copy_id']]);
+            $copy = R::findOne('copies', 'id = ?', [$data['copy_id']]);
             if ($copy) {
                 $copy->status = 'borrowed';
-                \R::store($copy);
+                R::store($copy);
             }
             
             // Actualizar contador de copias disponibles del libro
-            $book = \R::findOne('book', 'isbn = ?', [$copy->isbn]);
+            $book = R::findOne('books', 'isbn = ?', [$copy->isbn]);
             if ($book && $book->available_copies > 0) {
                 $book->available_copies--;
-                \R::store($book);
+                R::store($book);
             }
             
-            \R::commit();
+            R::commit();
             return $loan->id;
             
         } catch (\Exception $e) {
-            \R::rollback();
+            R::rollback();
             error_log('Error al crear préstamo: ' . $e->getMessage());
             return false;
         }
@@ -247,9 +248,9 @@ class Loan extends Model
     public static function returnLoan($loanId, $fine = 0)
     {
         try {
-            \R::begin();
+            R::begin();
             
-            $loan = \R::findOne('loan', 'id = ? AND status = ?', [$loanId, 'active']);
+            $loan = R::findOne('loans', 'id = ? AND status = ?', [$loanId, 'active']);
             if (!$loan) {
                 throw new \Exception('Préstamo no encontrado o ya devuelto');
             }
@@ -259,27 +260,27 @@ class Loan extends Model
             $loan->status = 'returned';
             $loan->fine = $fine;
             
-            \R::store($loan);
+            R::store($loan);
             
             // Actualizar estado de la copia
-            $copy = \R::findOne('copy', 'id = ?', [$loan->copy_id]);
+            $copy = R::findOne('copies', 'id = ?', [$loan->copy_id]);
             if ($copy) {
                 $copy->status = 'available';
-                \R::store($copy);
+                R::store($copy);
             }
             
             // Actualizar contador de copias disponibles del libro
-            $book = \R::findOne('book', 'isbn = ?', [$copy->isbn]);
+            $book = R::findOne('books', 'isbn = ?', [$copy->isbn]);
             if ($book) {
                 $book->available_copies++;
-                \R::store($book);
+                R::store($book);
             }
             
-            \R::commit();
+            R::commit();
             return true;
             
         } catch (\Exception $e) {
-            \R::rollback();
+            R::rollback();
             error_log('Error al devolver préstamo: ' . $e->getMessage());
             return false;
         }
@@ -291,7 +292,7 @@ class Loan extends Model
     public static function renew($loanId, $additionalDays = 15)
     {
         try {
-            $loan = \R::findOne('loan', 'id = ? AND status = ?', [$loanId, 'active']);
+            $loan = R::findOne('loans', 'id = ? AND status = ?', [$loanId, 'active']);
             if (!$loan) {
                 throw new \Exception('Préstamo no encontrado o no activo');
             }
@@ -310,7 +311,7 @@ class Loan extends Model
             $loan->notes = ($loan->notes ? $loan->notes . "\n" : '') . 
                           "Renovado el " . date('Y-m-d') . " por {$additionalDays} días adicionales.";
             
-            \R::store($loan);
+            R::store($loan);
             return true;
             
         } catch (\Exception $e) {
@@ -325,7 +326,7 @@ class Loan extends Model
     public static function applyFine($loanId, $amount, $reason = '')
     {
         try {
-            $loan = \R::findOne('loan', 'id = ?', [$loanId]);
+            $loan = R::findOne('loans', 'id = ?', [$loanId]);
             if (!$loan) {
                 throw new \Exception('Préstamo no encontrado');
             }
@@ -334,7 +335,7 @@ class Loan extends Model
             $loan->notes = ($loan->notes ? $loan->notes . "\n" : '') . 
                           "Multa aplicada: {$reason} - \${$amount} - " . date('Y-m-d H:i:s');
             
-            \R::store($loan);
+            R::store($loan);
             return true;
             
         } catch (\Exception $e) {
@@ -349,9 +350,9 @@ class Loan extends Model
     public static function markAsLost($loanId)
     {
         try {
-            \R::begin();
+            R::begin();
             
-            $loan = \R::findOne('loan', 'id = ? AND status = ?', [$loanId, 'active']);
+            $loan = R::findOne('loans', 'id = ? AND status = ?', [$loanId, 'active']);
             if (!$loan) {
                 throw new \Exception('Préstamo no encontrado o no activo');
             }
@@ -361,28 +362,28 @@ class Loan extends Model
             $loan->return_date = date('Y-m-d');
             $loan->fine = 50.00; // Multa por libro perdido
             
-            \R::store($loan);
+            R::store($loan);
             
             // Actualizar estado de la copia
-            $copy = \R::findOne('copy', 'id = ?', [$loan->copy_id]);
+            $copy = R::findOne('copies', 'id = ?', [$loan->copy_id]);
             if ($copy) {
                 $copy->status = 'lost';
-                \R::store($copy);
+                R::store($copy);
             }
             
             // Actualizar contador de copias del libro
-            $book = \R::findOne('book', 'isbn = ?', [$copy->isbn]);
+            $book = R::findOne('books', 'isbn = ?', [$copy->isbn]);
             if ($book) {
                 $book->available_copies--;
                 $book->total_copies--;
-                \R::store($book);
+                R::store($book);
             }
             
-            \R::commit();
+            R::commit();
             return true;
             
         } catch (\Exception $e) {
-            \R::rollback();
+            R::rollback();
             error_log('Error al marcar como perdido: ' . $e->getMessage());
             return false;
         }
@@ -405,10 +406,10 @@ class Loan extends Model
         ];
         
         // Total préstamos
-        $stats['total_loans'] = \R::count('loan');
+        $stats['total_loans'] = R::count('loans');
         
         // Préstamos activos
-        $stats['active_loans'] = \R::count('loan', 'status = ?', ['active']);
+        $stats['active_loans'] = R::count('loans', 'status = ?', ['active']);
         
         // Préstamos vencidos
         $stats['overdue_loans'] = self::countOverdue();
@@ -416,10 +417,10 @@ class Loan extends Model
         // Multas totales pendientes
         $sql = "
             SELECT SUM(fine) as total
-            FROM loan
+            FROM loans
             WHERE status = 'active' AND fine > 0
         ";
-        $result = \R::getRow($sql);
+        $result = R::getRow($sql);
         $stats['total_fines'] = $result['total'] ?? 0;
         
         return $stats;
@@ -444,27 +445,27 @@ class Loan extends Model
         ];
         
         // Total préstamos del mes
-        $stats['total_loans'] = \R::count('loan', 
+        $stats['total_loans'] = R::count('loans', 
             'loan_date >= ? AND loan_date <= ?', 
             [$startDate, $endDate]);
         
         // Devoluciones del mes
-        $stats['returns'] = \R::count('loan', 
+        $stats['returns'] = R::count('loans', 
             'return_date >= ? AND return_date <= ? AND status = ?', 
             [$startDate, $endDate, 'returned']);
         
         // Activos al final del mes
-        $stats['active'] = \R::count('loan', 
+        $stats['active'] = R::count('loans', 
             'status = ? AND (loan_date <= ? AND (return_date IS NULL OR return_date > ?))', 
             ['active', $endDate, $endDate]);
         
         // Vencidos al final del mes
         $sql = "
             SELECT COUNT(*) as count
-            FROM loan
+            FROM loans
             WHERE status = 'active' AND due_date <= ?
         ";
-        $result = \R::getRow($sql, [$endDate]);
+        $result = R::getRow($sql, [$endDate]);
         $stats['overdue'] = $result['count'] ?? 0;
         
         return $stats;
