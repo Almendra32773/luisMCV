@@ -1,4 +1,8 @@
 <?php ob_start(); ?>
+
+<!-- Validación de la variable $categories -->
+<?php $categories = $categories ?? []; ?>
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h1 class="h3 mb-0">Categorías</h1>
@@ -39,13 +43,9 @@
                         </div>
                     </div>
                     
-                    <?php if (!empty($category['description'])): ?>
-                        <p class="card-text small text-muted">
-                            <?= htmlspecialchars($category['description']) ?>
-                        </p>
-                    <?php else: ?>
-                        <p class="card-text small text-muted">Sin descripción</p>
-                    <?php endif; ?>
+                    <p class="card-text small text-muted">
+                        <?= htmlspecialchars($category['description'] ?? 'Sin descripción') ?>
+                    </p>
                     
                     <div class="mt-3">
                         <span class="badge bg-info">
@@ -56,7 +56,7 @@
                 </div>
                 <div class="card-footer bg-transparent border-top-0">
                     <small class="text-muted">
-                        Creada: <?= date('d/m/Y', strtotime($category['created_at'])) ?>
+                        Creada: <?= date('d/m/Y', strtotime($category['created_at'] ?? 'now')) ?>
                     </small>
                 </div>
             </div>
@@ -116,7 +116,7 @@
                     
                     <div class="mb-3">
                         <label for="edit_description_<?= $category['id'] ?>" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="edit_description_<?= $category['id'] ?>" 
+                        <textarea class="form-control" id="edit_description_<?= $category['id'] ?>"
                                   name="description" rows="3"><?= htmlspecialchars($category['description']) ?></textarea>
                     </div>
                 </div>
@@ -148,6 +148,7 @@ function deleteCategory(categoryId) {
     }
 }
 </script>
+
 <?php 
 $content = ob_get_clean(); 
 $title = 'Categorías';

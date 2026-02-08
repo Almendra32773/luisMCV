@@ -16,7 +16,7 @@
             <!-- Left Side (Menu) -->
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="/">
+                    <a class="nav-link" href="/luisMCV/public/">
                         <i class="bi bi-house-door"></i> Inicio
                     </a>
                 </li>
@@ -40,7 +40,7 @@
                             </li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <form method="POST" action="/logout" class="dropdown-item p-0">
+                                <form method="POST" action="/luisMCV/public/logout" class="dropdown-item p-0">
                                     <button type="submit" class="btn btn-link text-decoration-none w-100 text-start">
                                         <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
                                     </button>

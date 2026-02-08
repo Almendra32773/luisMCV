@@ -30,7 +30,7 @@ class Category extends Model
             ORDER BY c.name
         ";
         
-        return \R::getAll($sql);
+        return \R::getAll($sql) ?? [];
     }
     
     /**

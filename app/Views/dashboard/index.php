@@ -3,8 +3,10 @@
     <div class="col-12">
         <h1 class="h3 mb-0">Dashboard</h1>
         <p class="text-muted mb-0">
-            Bienvenido, <?= htmlspecialchars($_SESSION['user']['name']) ?> 
-            <span class="badge bg-secondary ms-1"><?= $_SESSION['user']['role'] ?></span>
+            <?php if (isset($_SESSION['user'])): ?>
+                Bienvenido, <?= htmlspecialchars($_SESSION['user']['name']) ?> 
+                <span class="badge bg-secondary ms-1"><?= $_SESSION['user']['role'] ?></span>
+            <?php endif; ?>
         </p>
     </div>
 </div>

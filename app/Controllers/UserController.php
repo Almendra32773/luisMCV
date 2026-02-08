@@ -12,7 +12,7 @@ class UserController extends Controller
         Middleware::auth();
         Middleware::admin(); // Solo administradores
         
-        $users = User::getAll();
+        $users = User::allOrdered(); // Cambiado de getAll a allOrdered
         
         $this->view('users/index', [
             'users' => $users

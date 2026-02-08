@@ -31,7 +31,7 @@ class Book extends Model
             LIMIT ? OFFSET ?
         ";
         
-        return \R::getAll($sql, [$limit, $offset]);
+        return \R::getAll($sql, [$limit, $offset]) ?? [];
     }
     
     /**
@@ -56,7 +56,7 @@ class Book extends Model
         ";
         
         $searchTerm = "%{$query}%";
-        return \R::getAll($sql, [$searchTerm, $searchTerm, $searchTerm, $limit, $offset]);
+        return \R::getAll($sql, [$searchTerm, $searchTerm, $searchTerm, $limit, $offset]) ?? [];
     }
     
     /**

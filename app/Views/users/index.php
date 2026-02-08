@@ -1,11 +1,14 @@
-<?php ob_start(); ?>
+<?php
+session_start();
+
+ob_start(); ?>
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h3 mb-0">Usuarios del Sistema</h1>
             <p class="text-muted mb-0">Gestión de usuarios con acceso al sistema</p>
         </div>
-        <?php if ($_SESSION['user']['role'] === 'admin'): ?>
+        <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin'): ?>
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUserModal">
                 <i class="bi bi-person-plus me-2"></i>Nuevo Usuario
             </button>
@@ -75,7 +78,7 @@
                                                data-bs-toggle="tooltip" title="Editar">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
-                                            <?php if ($_SESSION['user']['role'] === 'admin' && $_SESSION['user']['id'] != $user->id): ?>
+                                            <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin' && $_SESSION['user']['id'] != $user->id): ?>
                                                 <form method="POST" 
                                                       action="/users/<?= $user->id ?>/delete" 
                                                       class="d-inline"
@@ -101,7 +104,7 @@
 </div>
 
 <!-- Modal para crear usuario (solo admin) -->
-<?php if ($_SESSION['user']['role'] === 'admin'): ?>
+<?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin'): ?>
 <div class="modal fade" id="createUserModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">

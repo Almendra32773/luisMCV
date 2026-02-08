@@ -12,6 +12,7 @@ class CategoryController extends Controller
         Middleware::auth();
         
         $categories = Category::getAllWithStats();
+        $categories = $categories ?? [];
         
         $this->view('categories/index', [
             'categories' => $categories

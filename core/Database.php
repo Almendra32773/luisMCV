@@ -1,6 +1,8 @@
 <?php
-
 namespace Core;
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
 
 use Exception;
 use RedBeanPHP\R;
@@ -11,7 +13,7 @@ class Database
     {
         try {
             $host = $_ENV['DB_HOST'] ?? 'localhost';
-            $db   = $_ENV['DB_DATABASE'] ?? 'mi_mvc_db';
+            $db   = $_ENV['DB_DATABASE'] ?? 'gestion_biblioteca_mvc';
             $user = $_ENV['DB_USERNAME'] ?? 'root';
             $pass = $_ENV['DB_PASSWORD'] ?? '';
             $port = $_ENV['DB_PORT'] ?? '3306';
